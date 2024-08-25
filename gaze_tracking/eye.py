@@ -118,4 +118,18 @@ class Eye(object):
             calibration.evaluate(self.frame, side)
 
         threshold = calibration.threshold(side)
+        # Call the debug function
+        processed_frames = Pupil.debug_image_processing(self.frame, threshold)
         self.pupil = Pupil(self.frame, threshold)
+
+        # Optionally save or display the debug frames
+        window_names = []
+        for i, img in enumerate(processed_frames):
+            window_name = f"Debug Frame {i}"
+            window_names.append(window_name)
+            cv2.imshow(window_name, img)
+            cv2.waitKey(0)  # Wait for a key press to close each debug window
+
+        # Close the debug windows
+        for window_name in window_names:
+            cv2.destroyWindow(window_name)

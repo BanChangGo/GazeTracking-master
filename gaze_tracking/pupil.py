@@ -52,3 +52,21 @@ class Pupil(object):
             self.y = int(moments['m01'] / moments['m00'])
         except (IndexError, ZeroDivisionError):
             pass
+
+    @staticmethod
+    def debug_image_processing(eye_frame, threshold):
+        """Performs operations on the eye frame to isolate the iris and returns intermediate steps.
+        
+        Arguments:
+            eye_frame (numpy.ndarray): Frame containing an eye and nothing else
+            threshold (int): Threshold value used to binarize the eye frame
+        
+        Returns:
+            A tuple containing the processed frames
+        """
+        kernel = np.ones((3, 3), np.uint8)
+        new_frame = cv2.bilateralFilter(eye_frame, 10, 15, 15)
+        eroded_frame = cv2.erode(new_frame, kernel, iterations=3)
+        binarized_frame = cv2.threshold(eroded_frame, threshold, 255, cv2.THRESH_BINARY)[1]
+
+        return new_frame, eroded_frame, binarized_frame
