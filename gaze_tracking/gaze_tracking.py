@@ -18,6 +18,7 @@ class GazeTracking(object):
         self.eye_left = None
         self.eye_right = None
         self.calibration = Calibration()
+        
 
         # _face_detector is used to detect faces
         self._face_detector = dlib.get_frontal_face_detector()
@@ -49,10 +50,14 @@ class GazeTracking(object):
             landmarks = self._predictor(frame, faces[0])
             self.eye_left = Eye(frame, landmarks, 0, self.calibration)
             self.eye_right = Eye(frame, landmarks, 1, self.calibration)
+            
 
         except IndexError:
             self.eye_left = None
             self.eye_right = None
+            
+
+        
 
     def refresh(self, frame):
         """Refreshes the frame and analyzes it.
@@ -130,5 +135,12 @@ class GazeTracking(object):
             cv2.line(frame, (x_left, y_left - 5), (x_left, y_left + 5), color)
             cv2.line(frame, (x_right - 5, y_right), (x_right + 5, y_right), color)
             cv2.line(frame, (x_right, y_right - 5), (x_right, y_right + 5), color)
+        
+        if self.eye_left and self.eye_right:
+            landmarks = self.eye_left.landmarks  # Ensure you have landmarks from one of the eye objects
+
+            for dot in range(68):
+                x, y = landmarks.part(dot).x, landmarks.part(dot).y
+                cv2.circle(frame, (x, y), 1, (0, 0, 255), -1)  # Draw a red circle for each landmark
 
         return frame

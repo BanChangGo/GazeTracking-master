@@ -18,7 +18,9 @@ class Eye(object):
         self.origin = None
         self.center = None
         self.pupil = None
-        self.landmark_points = None
+        self.landmark_points = landmarks
+        self.landmarks = landmarks
+        
 
         self._analyze(original_frame, landmarks, side, calibration)
 
