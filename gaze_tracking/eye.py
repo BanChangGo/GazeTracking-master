@@ -20,13 +20,7 @@ class Eye(object):
         self.pupil = None
         self.landmark_points = landmarks
         self.landmarks = landmarks
-        self.margin = 5
-
-        # Set different margins for left and right eye
-        if side == 0:
-            self.margin = 10  # Example margin value for the left eye
-        elif side == 1:
-            self.margin = 5   # Example margin value for the right eye
+        
 
         self._analyze(original_frame, landmarks, side, calibration)
 
@@ -51,8 +45,7 @@ class Eye(object):
             points (list): Points of an eye (from the 68 Multi-PIE landmarks)
         """
         region = np.array([(landmarks.part(point).x, landmarks.part(point).y) for point in points])
-        ## 정수형으로 변환하면 부정확할 거 같아서 변수처리 해봄 
-        #region = region.astype(np.int32)
+        region = region.astype(np.int32)
         self.landmark_points = region
 
         # Applying a mask to get only the eye
@@ -63,7 +56,7 @@ class Eye(object):
         eye = cv2.bitwise_not(black_frame, frame.copy(), mask=mask)
 
         # Cropping on the eye
-        margin = 2
+        margin = 5
         min_x = np.min(region[:, 0]) - margin
         max_x = np.max(region[:, 0]) + margin
         min_y = np.min(region[:, 1]) - margin
@@ -111,17 +104,12 @@ class Eye(object):
             side: Indicates whether it's the left eye (0) or the right eye (1)
             calibration (calibration.Calibration): Manages the binarization threshold value
         """
-
-        eye_frame = self.frame  # 혹은 다른 적절한 값으로 초기화
-        calibration.evaluate(eye_frame, side)
-    
         if side == 0:
             points = self.LEFT_EYE_POINTS
         elif side == 1:
             points = self.RIGHT_EYE_POINTS
         else:
             return
-        
 
         self.blinking = self._blinking_ratio(landmarks, points)
         self._isolate(original_frame, landmarks, points)
@@ -130,14 +118,10 @@ class Eye(object):
             calibration.evaluate(self.frame, side)
 
         threshold = calibration.threshold(side)
-        
-        margin = 5 if side == 0 else 10  # 왼쪽과 오른쪽 눈에 대해 서로 다른 margin을 줄 수 있음
-        processed_frames = Pupil.debug_image_processing(self.frame, threshold, margin)
-        self.pupil = Pupil(self.frame, threshold, margin)
-
-        # Call the debug functions
-        processed_frames = Pupil.debug_image_processing(self.frame, threshold, self.margin)
-        self.pupil = Pupil(self.frame, threshold, self.margin)
+        '''
+        # Call the debug function
+        processed_frames = Pupil.debug_image_processing(self.frame, threshold)
+        self.pupil = Pupil(self.frame, threshold)
 
         # Optionally save or display the debug frames
         window_names = []
@@ -149,4 +133,4 @@ class Eye(object):
 
         # Close the debug windows
         for window_name in window_names:
-            cv2.destroyWindow(window_name)
+            cv2.destroyWindow(window_name)'''

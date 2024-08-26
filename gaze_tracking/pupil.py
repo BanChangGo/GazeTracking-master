@@ -8,17 +8,16 @@ class Pupil(object):
     the position of the pupil
     """
 
-    def __init__(self, eye_frame, threshold, margin):
+    def __init__(self, eye_frame, threshold):
         self.iris_frame = None
         self.threshold = threshold
         self.x = None
         self.y = None
-        self.margin = margin
 
         self.detect_iris(eye_frame)
 
     @staticmethod
-    def image_processing(eye_frame, threshold, margin):
+    def image_processing(eye_frame, threshold):
         """Performs operations on the eye frame to isolate the iris
 
         Arguments:
@@ -32,10 +31,6 @@ class Pupil(object):
         new_frame = cv2.bilateralFilter(eye_frame, 10, 15, 15)
         new_frame = cv2.erode(new_frame, kernel, iterations=3)
         new_frame = cv2.threshold(new_frame, threshold, 255, cv2.THRESH_BINARY)[1]
-
-        # Apply margin adjustments if needed
-        height, width = new_frame.shape[:2]
-        new_frame = new_frame[margin:height-margin, margin:width-margin]
 
         return new_frame
 
@@ -69,22 +64,9 @@ class Pupil(object):
         Returns:
             A tuple containing the processed frames
         """
-        processed_frames = []
-
-        # Original frame
-        processed_frames.append(eye_frame)
-
-        # Bilateral Filter
-        bilateral_frame = cv2.bilateralFilter(eye_frame, 10, 15, 15)
-        processed_frames.append(bilateral_frame)
-
-        # Erosion
         kernel = np.ones((3, 3), np.uint8)
-        eroded_frame = cv2.erode(bilateral_frame, kernel, iterations=3)
-        processed_frames.append(eroded_frame)
+        new_frame = cv2.bilateralFilter(eye_frame, 10, 15, 15)
+        eroded_frame = cv2.erode(new_frame, kernel, iterations=3)
+        binarized_frame = cv2.threshold(eroded_frame, threshold, 255, cv2.THRESH_BINARY)[1]
 
-        # Thresholding
-        threshold_frame = cv2.threshold(eroded_frame, threshold, 255, cv2.THRESH_BINARY)[1]
-        processed_frames.append(threshold_frame)
-
-        return processed_frames
+        return new_frame, eroded_frame, binarized_frame
