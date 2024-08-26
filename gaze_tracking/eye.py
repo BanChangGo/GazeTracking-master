@@ -118,7 +118,8 @@ class Eye(object):
             calibration.evaluate(self.frame, side)
 
         threshold = calibration.threshold(side)
-        '''
+        self.pupil = Pupil(self.frame, threshold)
+'''
         # Call the debug function
         processed_frames = Pupil.debug_image_processing(self.frame, threshold)
         self.pupil = Pupil(self.frame, threshold)
@@ -133,4 +134,6 @@ class Eye(object):
 
         # Close the debug windows
         for window_name in window_names:
-            cv2.destroyWindow(window_name)'''
+            cv2.destroyWindow(window_name)
+
+            '''
