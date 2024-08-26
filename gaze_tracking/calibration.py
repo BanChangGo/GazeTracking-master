@@ -44,13 +44,19 @@ class Calibration(object):
         return nb_blacks / nb_pixels
 
     @staticmethod
-    def find_best_threshold(eye_frame):
+    def find_best_threshold(self, eye_frame):
         """Calculates the optimal threshold to binarize the
         frame for the given eye.
 
         Argument:
             eye_frame (numpy.ndarray): Frame of the eye to be analyzed
+
+
         """
+
+        margin = 5  # or any other value that is appropriate
+        iris_frame = Pupil.image_processing(eye_frame, threshold, margin)
+
         average_iris_size = 0.48
         trials = {}
 
@@ -70,8 +76,6 @@ class Calibration(object):
             side: Indicates whether it's the left eye (0) or the right eye (1)
         """
         threshold = self.find_best_threshold(eye_frame)
+        self.thresholds[side].append(threshold)
 
-        if side == 0:
-            self.thresholds_left.append(threshold)
-        elif side == 1:
-            self.thresholds_right.append(threshold)
+        
