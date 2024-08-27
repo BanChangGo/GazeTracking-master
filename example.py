@@ -5,8 +5,10 @@ Check the README.md for complete documentation.
 
 import cv2
 from gaze_tracking import GazeTracking
+from gaze_tracking.eyemovement import EyeMovementTracker
 
 gaze = GazeTracking()
+eye_tracker = EyeMovementTracker()
 webcam = cv2.VideoCapture(0)
 
 while True:
@@ -15,6 +17,11 @@ while True:
 
     # We send this frame to GazeTracking to analyze it
     gaze.refresh(frame)
+
+    horizontal_ratio = gaze.horizontal_ratio()
+    pupil_coords = gaze.pupil_left_coords()  
+
+    eye_tracker.update(horizontal_ratio, pupil_coords)
 
     frame = gaze.annotated_frame()
     text_blink = ""
