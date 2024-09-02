@@ -21,11 +21,11 @@ while True:
     _, frame = webcam.read()
 
     # We send this frame to GazeTracking to analyze it
-    # gaze_trackingì˜ refreshí•¨ìˆ˜ì— ì›¹ìº¡ì—ì„œ ì½ì€ frameì„ ë„£ì–´ í˜¸ì¶œí•¨
-    # refreshëŠ” cv2 ì ìš©í•œ frameê³¼ faces ë³€ìˆ˜ë¥¼ ë°˜í™˜ -> face detectì— ë³€ìˆ˜ë¡œì¨ ì“¸ ìˆ˜ ìˆìŒ 
+    # gaze_tracking?˜ refresh?•¨?ˆ˜?— ?›¹ìº¡ì—?„œ ?½??? frame?„ ?„£?–´ ?˜¸ì¶œí•¨
+    # refresh?Š” cv2 ? ?š©?•œ frameê³? faces ë³??ˆ˜ë¥? ë°˜í™˜ -> face detect?— ë³??ˆ˜ë¡œì¨ ?“¸ ?ˆ˜ ?ˆ?Œ 
     frame, faces = gaze.refresh(frame)
 
-    # í”„ë ˆì„ì— cv2 ì ìš©, ì–¼êµ´ íƒì§€ 
+    # ?”„? ˆ?„?— cv2 ? ?š©, ?–¼êµ? ?ƒì§? 
     gaze._analyze()
     frame = gaze.annotated_frame()
 
@@ -33,17 +33,9 @@ while True:
     pupil_coords = gaze.pupil_left_coords()  
 
  
-    detect = eye_tracker.update(horizontal_ratio, pupil_coords)
-    print(detect, "detection dkdkdkdkd")
-    if (detect):
-        
-        recognizer.recognize_faces()
-        exit()
-    
+    eye_tracker.update(horizontal_ratio, pupil_coords)
 
-    
-
-    
+    frame = gaze.annotated_frame()
     text_blink = ""
     text_left = ""
     text_right = ""
