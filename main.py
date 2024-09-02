@@ -14,9 +14,9 @@ webcam = cv2.VideoCapture(0)
 recognizer = FaceRecognizer()
 
 while True:
-    recognizer.recognize_faces()
     
-    '''
+
+    
     # We get a new frame from the webcam
     _, frame = webcam.read()
 
@@ -27,7 +27,14 @@ while True:
     pupil_coords = gaze.pupil_left_coords()  
 
  
-    eye_tracker.update(horizontal_ratio, pupil_coords)
+    detect = eye_tracker.update(horizontal_ratio, pupil_coords)
+    if (detect):
+        #print(detect)
+        recognizer.recognize_faces()
+        exit()
+    
+
+    
 
     frame = gaze.annotated_frame()
     text_blink = ""
@@ -65,4 +72,3 @@ while True:
     
 webcam.release()
 cv2.destroyAllWindows()
-'''

@@ -10,7 +10,7 @@ class FaceRecognizer:
         
         cwd = os.path.abspath(os.path.dirname(__file__))
         model_path = os.path.abspath(os.path.join(cwd, "shape_predictor_68_face_landmarks.dat"))
-        self._predictor = dlib.shape_predictor(model_path)
+        self.predictor = dlib.shape_predictor(model_path)
 
         cwd2 = os.path.abspath(os.path.dirname(__file__))
         model_path2 = os.path.abspath(os.path.join(cwd2, "dlib_face_recognition_resnet_model_v1.dat"))
