@@ -46,7 +46,9 @@ class EyeMovementTracker:
                 self.pupil_positions.clear()
                 self.initial_pupil_pos = None
                 print("Exiting the program due to detected horizontal movement.")
-                exit()  # 프로그램 종료
+                return "detected"
+                
+                  # 프로그램 종료
     
     # 수평 이동 비율 중 min, max 인덱스 값 return
     def return_index_of(self):

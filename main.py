@@ -14,27 +14,45 @@ webcam = cv2.VideoCapture(0)
 recognizer = FaceRecognizer()
 
 while True:
-    recognizer.recognize_faces()
     
-    '''
+
+    
     # We get a new frame from the webcam
     _, frame = webcam.read()
 
     # We send this frame to GazeTracking to analyze it
-    gaze.refresh(frame)
+    # gaze_tracking의 refresh함수에 웹캡에서 읽은 frame을 넣어 호출함
+    # refresh는 cv2 적용한 frame과 faces 변수를 반환 -> face detect에 변수로써 쓸 수 있음 
+    frame, faces = gaze.refresh(frame)
+
+    # 프레임에 cv2 적용, 얼굴 탐지 
+    gaze._analyze()
+    frame = gaze.annotated_frame()
 
     horizontal_ratio = gaze.horizontal_ratio()
     pupil_coords = gaze.pupil_left_coords()  
 
  
-    eye_tracker.update(horizontal_ratio, pupil_coords)
+    detect = eye_tracker.update(horizontal_ratio, pupil_coords)
+    print(detect, "detection dkdkdkdkd")
+    if (detect):
+        
+        recognizer.recognize_faces()
+        exit()
+    
 
-    frame = gaze.annotated_frame()
+    
+
+    
     text_blink = ""
     text_left = ""
     text_right = ""
     text_center = ""
     text_ratio = ""
+
+    print(f"is_blinking() returns: {gaze.is_blinking()}")
+    print(f"is_right() returns: {gaze.is_right()}")
+
 
     if gaze.is_blinking is not None:
         text_blink = str(gaze.is_blinking())
@@ -65,4 +83,3 @@ while True:
     
 webcam.release()
 cv2.destroyAllWindows()
-'''

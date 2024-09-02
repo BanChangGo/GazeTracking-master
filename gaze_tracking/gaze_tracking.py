@@ -17,6 +17,7 @@ class GazeTracking(object):
         self.frame = None
         self.eye_left = None
         self.eye_right = None
+        self.faces = None
         self.calibration = Calibration()
         
 
@@ -42,20 +43,33 @@ class GazeTracking(object):
 
     def _analyze(self):
         """Detects the face and initialize Eye objects"""
-        frame = cv2.cvtColor(self.frame, cv2.COLOR_BGR2GRAY)
-        frame = cv2.equalizeHist(frame)
-        faces = self._face_detector(frame)
+        if self.faces is None or len(self.faces) == 0:
+            self.eye_left = None
+            self.eye_right = None
+            print("No faces detected.")
+            return
 
         try:
-            landmarks = self._predictor(frame, faces[0])
-            self.eye_left = Eye(frame, landmarks, 0, self.calibration)
-            self.eye_right = Eye(frame, landmarks, 1, self.calibration)
+            landmarks = self._predictor(self.frame, self.faces[0])
+            self.eye_left = Eye(self.frame, landmarks, 0, self.calibration)
+            self.eye_right = Eye(self.frame, landmarks, 1, self.calibration)
+            print("Eyes initialized.")
+        except IndexError:
+            self.eye_left = None
+            self.eye_right = None
+            print("Error initializing eyes.")
+
+        '''
+        try:
+            landmarks = self._predictor(self.frame, self.faces[0])
+            self.eye_left = Eye(self.frame, landmarks, 0, self.calibration)
+            self.eye_right = Eye(self.frame, landmarks, 1, self.calibration)
             
 
         except IndexError:
             self.eye_left = None
             self.eye_right = None
-            
+            '''
 
         
 
@@ -66,7 +80,12 @@ class GazeTracking(object):
             frame (numpy.ndarray): The frame to analyze
         """
         self.frame = frame
-        self._analyze()
+        gray = cv2.cvtColor(self.frame, cv2.COLOR_BGR2GRAY)
+        frame = cv2.equalizeHist(gray)
+        self.faces = self._face_detector(frame)
+        return self.frame, self.faces
+
+    
 
     def pupil_left_coords(self):
         """Returns the coordinates of the left pupil"""

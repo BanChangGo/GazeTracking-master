@@ -10,7 +10,7 @@ class FaceRecognizer:
         
         cwd = os.path.abspath(os.path.dirname(__file__))
         model_path = os.path.abspath(os.path.join(cwd, "shape_predictor_68_face_landmarks.dat"))
-        self._predictor = dlib.shape_predictor(model_path)
+        self.predictor = dlib.shape_predictor(model_path)
 
         cwd2 = os.path.abspath(os.path.dirname(__file__))
         model_path2 = os.path.abspath(os.path.join(cwd2, "dlib_face_recognition_resnet_model_v1.dat"))
@@ -36,20 +36,15 @@ class FaceRecognizer:
             self.face_names.append(name)
         print(f"Learned face: {name}")
 
-    def recognize_faces(self):
+    def recognize_faces(self, frame, faces):
         """Recognize faces from the webcam feed."""
-        cap = cv2.VideoCapture(0)
+        
 
         while True:
-            ret, frame = cap.read()
-            if not ret:
-                break
-
-            gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-            faces = self.detector(gray)
+            
 
             for face in faces:
-                shape = self.predictor(gray, face)
+                shape = self.predictor(frame, face)
                 encoding = np.array(self.recognizer.compute_face_descriptor(frame, shape))
 
                 if len(self.face_encodings) > 0:
@@ -75,5 +70,4 @@ class FaceRecognizer:
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
 
-        cap.release()
         cv2.destroyAllWindows()
