@@ -21,6 +21,8 @@ while True:
     horizontal_ratio = gaze.horizontal_ratio()
     pupil_coords = gaze.pupil_left_coords()  
 
+
+    ##¾ó±¼ Å½ÁöµÇ¸é ½ÇÇàµÇ°Ô
     eye_tracker.update(horizontal_ratio, pupil_coords)
 
     frame = gaze.annotated_frame()

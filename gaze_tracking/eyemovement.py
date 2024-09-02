@@ -40,6 +40,7 @@ class EyeMovementTracker:
         if len(self.horizontal_ratios) == self.horizontal_ratios.maxlen:
             if self._is_horizontal_movement() and self._are_pupil_positions_within_bounds():
                 print("Horizontal movement detected!")
+                ##face_detectro 실행을 
                 # 이동 탐지 후 초기화
                 self.horizontal_ratios.clear()
                 self.pupil_positions.clear()

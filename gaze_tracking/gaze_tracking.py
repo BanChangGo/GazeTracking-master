@@ -25,7 +25,7 @@ class GazeTracking(object):
 
         # _predictor is used to get facial landmarks of a given face
         cwd = os.path.abspath(os.path.dirname(__file__))
-        model_path = os.path.abspath(os.path.join(cwd, "trained_models/shape_predictor_68_face_landmarks.dat"))
+        model_path = os.path.abspath(os.path.join(cwd, "shape_predictor_68_face_landmarks.dat"))
         self._predictor = dlib.shape_predictor(model_path)
 
     @property
@@ -43,7 +43,7 @@ class GazeTracking(object):
     def _analyze(self):
         """Detects the face and initialize Eye objects"""
         frame = cv2.cvtColor(self.frame, cv2.COLOR_BGR2GRAY)
-        frame = cv2.equalizeHist(frame);
+        frame = cv2.equalizeHist(frame)
         faces = self._face_detector(frame)
 
         try:
