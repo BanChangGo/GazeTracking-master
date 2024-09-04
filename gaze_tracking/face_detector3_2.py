@@ -21,23 +21,24 @@ class FaceRecognizer:
         self.face_encodings = []
         self.face_names = []
         self.load_faces()
-        #self.face_names ë¦¬ìŠ¤?Š¸?˜ ?˜„?ž¬ ê¸¸ì´?— 1?„ ?”?•˜?—¬ ?‹¤?Œ?— ?‚¬?š©?•  IDë¥? ?„¤? •.
-        #ë¦¬ìŠ¤?Š¸?—?„œ ?–¼êµ? ?´ë¦„ì´ ? œê±? ?˜?—ˆ?„ ?•Œ, ?‹¤?Œ IDë¥? ?˜¬ë°”ë¥´ê²? ?„¤? •.
+        #self.face_names ç”±ÑŠë’ª?ë“ƒ?ì“½ ?ì½?ì˜± æ¹²ëª„ì” ?ë¿‰ 1?ì“£ ?ëœ‘?ë¸¯?ë¿¬ ?ë–Ž?ì“¬?ë¿‰ ?ê¶—?ìŠœ?ë¸· IDç‘œ? ?ê½•?ì ™.
+        #ç”±ÑŠë’ª?ë“ƒ?ë¿‰?ê½Œ ?ë¼¹æ´? ?ì” ç”±ê¾©ì”  ?ì £å«„? ?ë¦º?ë¿€?ì“£ ?ë¸£, ?ë–Ž?ì“¬ IDç‘œ? ?ì‚±è«›ë¶¾â…¤å¯ƒ? ?ê½•?ì ™.
         self.next_id = len(self.face_names) + 1
 
-    # ?´? „?— ????ž¥?œ ?–¼êµ? ?¸ì½”ë”©ê³? ?´ë¦„ì„ ?ŒŒ?¼?—?„œ ë¶ˆëŸ¬?˜´.
+    # ?ì” ?ìŸ¾?ë¿‰ ????ì˜£?ë§‚ ?ë¼¹æ´? ?ì”¤è‚„ë¶¾ëµ«æ€¨? ?ì” ç”±ê¾©ì“£ ?ë™†?ì”ª?ë¿‰?ê½Œ éºëˆìœ­?ìƒ‚.
     def load_faces(self):
         """Load previously saved face encodings and names."""
         if os.path.exists('face_data.pkl'):
             with open('face_data.pkl', 'rb') as f:
                 self.face_encodings, self.face_names = pickle.load(f)
-    # ?˜„?ž¬?˜ ?–¼êµ? ?¸ì½”ë”©ê³? ?´ë¦„ì„ ?ŒŒ?¼?— ????ž¥.
+    # ?ì½?ì˜±?ì“½ ?ë¼¹æ´? ?ì”¤è‚„ë¶¾ëµ«æ€¨? ?ì” ç”±ê¾©ì“£ ?ë™†?ì”ª?ë¿‰ ????ì˜£.
     def save_faces(self):
         """Save face encodings and names to a file."""
         with open('face_data.pkl', 'wb') as f:
             pickle.dump((self.face_encodings, self.face_names), f)
 
     def learn_face(self,image):
+        print("learn face function start")
 
         """Learn a new face from an image."""
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -50,19 +51,22 @@ class FaceRecognizer:
         for face in faces:
             shape = self.predictor(gray, face)
             encoding = np.array(self.recognizer.compute_face_descriptor(image, shape))
-
-            # ?´ë¯? ?•™?Šµ?œ ?–¼êµ´ì¸ì§? ?™•?¸
-            # if any(np.allclose(encoding, enc, atol=1e-4) for enc in self.face_encodings):
-            #     print("?´ë¯? ????ž¥?œ ?–¼êµ? ?°?´?„°?ž…?‹ˆ?‹¤.")
-            #     return
-            # for i, enc in enumerate(self.face_encodings):
-            #     if np.allclose(encoding, enc, atol=1e-4):
-            #         print()
             
             self.face_encodings.append(encoding)
             self.face_names.append(f"User_{self.next_id}")# User_1, User_2 allocating automatically
             self.next_id += 1 
             self.save_faces()
+
+            # í•™ìŠµ ì¤‘ì¸ ì–¼êµ´ì„ ì‹œê°ì ìœ¼ë¡œ í‘œì‹œ
+            cv2.rectangle(image, (face.left(), face.top()), (face.right(), face.bottom()), (0, 255, 0), 2)
+            cv2.putText(image, f"Learning: User_{self.next_id - 1}", 
+                    (face.left(), face.top() - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
+
+            # ì´ë¯¸ì§€ ì°½ì„ ì—…ë°ì´íŠ¸í•˜ê³  2ì´ˆ ë™ì•ˆ ëŒ€ê¸°
+            cv2.imshow("Learning Face", image)
+            cv2.waitKey(2000)  # 2ì´ˆ ë™ì•ˆ í‘œì‹œ
+
+        cv2.destroyWindow("Learning Face")  # ìž‘ì—…ì´ ëë‚˜ë©´ ì°½ì„ ë‹«ìŒ
 
     def recognize_faces(self,frame = None):
         """Recognize faces from the webcam feed."""
@@ -78,7 +82,7 @@ class FaceRecognizer:
                 if len(self.face_encodings) > 0:
                     distances = np.linalg.norm(self.face_encodings - encoding, axis=1)
                     min_distance_index = np.argmin(distances)
-                        #ê±°ë¦¬ ê¸°ì?? 0.6 -> 0.5 ì¡°ì •.
+                       
                     if distances[min_distance_index] < 0.6:
                         name = self.face_names[min_distance_index]
                         cv2.rectangle(frame, (face.left(), face.top()), (face.right(), face.bottom()), (0, 255, 0), 2)
@@ -95,26 +99,23 @@ class FaceRecognizer:
                         print("You are thief!")
                         return
                         #exit(1)
-                            # print("Unknown ?–¼êµ? ë°œê²¬. ?•™?Šµ?• ê¹Œìš”? (y/n)")
+                            # print("Unknown ?ë¼¹æ´? è«›ì’“ê»„. ?ë¸°?ë’¿?ë¸·æºëš¯ìŠ‚? (y/n)")
                             # user_input = input()
                             # if user_input.lower() == 'y':
                                 # self.learn_faces(face)
                         
                 else:
                     name = "Can't recognize face"
-
+                    print("Before register -> again eyetracking")
+                    return
                     
-                
-                # if face_recognized:
-                #     cv2.putText(frame, "Open", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
-                #     cv2.imshow("Face Recognition", frame)
-                #     cv2.waitKey(2000)  # 2ì´? ?™?•ˆ ë³´ì—¬ì¤?
-                #     break
+
+                                
         cap = cv2.VideoCapture(0)
         #face_recognized = False
 
         while True:
-            ret, frame = cap.read()#frame?„ ë°›ì•„?˜¨?‹¤.
+            ret, frame = cap.read()#frame
             if not ret:
                 break
 
@@ -130,35 +131,30 @@ class FaceRecognizer:
                 if len(self.face_encodings) > 0:
                     distances = np.linalg.norm(self.face_encodings - encoding, axis=1)
                     min_distance_index = np.argmin(distances)
-                    #ê±°ë¦¬ ê¸°ì?? 0.6 -> 0.5 ì¡°ì •.
+                    
                     if distances[min_distance_index] < 0.6:
                         name = self.face_names[min_distance_index]
                         #face_recognized = True
                     else:
                         name = "Unknown"
-                        # print("Unknown ?–¼êµ? ë°œê²¬. ?•™?Šµ?• ê¹Œìš”? (y/n)")
-                        # user_input = input()
-                        # if user_input.lower() == 'y':
-                            # self.learn_faces(face)
+                        
                 else:
                     name = "Can't recognize face"
 
                 cv2.rectangle(frame, (face.left(), face.top()), (face.right(), face.bottom()), (0, 255, 0), 2)
                 cv2.putText(frame, name, (face.left(), face.top() - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
             
-            # if face_recognized:
-            #     cv2.putText(frame, "Open", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
-            #     cv2.imshow("Face Recognition", frame)
-            #     cv2.waitKey(2000)  # 2ì´? ?™?•ˆ ë³´ì—¬ì¤?
-            #     break
+            
 
             cv2.imshow("Face Recognition", frame)
 
+            '''
             if cv2.waitKey(1) & 0xFF == ord('c'):
                 self.learn_face(frame)
 
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
+            '''
 
         cap.release()
         cv2.destroyAllWindows()

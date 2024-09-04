@@ -14,17 +14,19 @@ class EyeMovementTracker:
     #큐에 정보 저장해서 update, 수평 이동인지 검사 이후 종료
     def update(self, horizontal_ratio, pupil_coords):
         current_time = time.time()
+        '''
         # Debug: Print the incoming horizontal_ratio and pupil_coords
         print(f"Update called with horizontal_ratio: {horizontal_ratio}, pupil_coords: {pupil_coords}")
+        '''
 
         if self.last_update_time is not None:
             time_diff = current_time - self.last_update_time
-            print(f"Time since last update: {time_diff:.4f} seconds")  # 이전 업데이트와의 시간 차이 출력
+            #print(f"Time since last update: {time_diff:.4f} seconds")  # 이전 업데이트와의 시간 차이 출력
         self.last_update_time = current_time
 
 
         if horizontal_ratio is None:
-            print("Skipping update because horizontal_ratio is None.")
+            #print("Skipping update because horizontal_ratio is None.")
             return
         
         
@@ -32,9 +34,11 @@ class EyeMovementTracker:
         self.horizontal_ratios.append(horizontal_ratio)
         self.pupil_positions.append(pupil_coords)
         
-        # Debug: Print the current state of the queues
+        '''
+        # Debug: Print the current state of the queues     
         print("Current horizontal_ratios queue:", list(self.horizontal_ratios))
         print("Current pupil_positions queue:", list(self.pupil_positions))
+        '''
 
         # 수평 이동을 검증
         if len(self.horizontal_ratios) == self.horizontal_ratios.maxlen:
