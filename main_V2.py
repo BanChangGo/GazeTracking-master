@@ -69,19 +69,24 @@ def entry_mode():
 # 메인 함구
 def main():
     while True:
-        print("1: 학습 모드, 2: 진입 모드, q: 종료")
-        choice = input("모드선택 ")
+        #print("1: 학습 모드, 2: 진입 모드, q: 종료")
+        choice = False
+        '''
+            GPIO input => Ture
+        ''' 
+        entry_mode()
 
-        if choice == '1':
+        if choice == True:
             print("학습 모드...")
             recognizer.recognize_faces()
+        '''
         elif choice == '2':
             print("진입 모드...")
-            entry_mode()
+        
         elif choice == 'q':
             break
         else:
             print("?잘못된 선택.")
-
+        '''
 if __name__ == "__main__":
     main()

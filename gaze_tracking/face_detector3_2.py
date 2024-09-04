@@ -87,16 +87,19 @@ class FaceRecognizer:
                         cv2.imshow("Face Recognition", frame)
                         cv2.waitKey(2000)
                         print("OPEN!")
-                        exit()
+                        return
+                        #exit()
 
                             #face_recognized = True
                     else:
                         print("You are thief!")
-                        exit(1)
+                        return
+                        #exit(1)
                             # print("Unknown ?–¼êµ? ë°œê²¬. ?•™?Šµ?• ê¹Œìš”? (y/n)")
                             # user_input = input()
                             # if user_input.lower() == 'y':
                                 # self.learn_faces(face)
+                        
                 else:
                     name = "Can't recognize face"
 
