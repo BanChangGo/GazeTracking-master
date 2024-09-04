@@ -22,7 +22,6 @@ while True:
     pupil_coords = gaze.pupil_left_coords()  
 
 
-    ##얼굴 탐지되면 실행되게
     eye_tracker.update(horizontal_ratio, pupil_coords)
 
     frame = gaze.annotated_frame()

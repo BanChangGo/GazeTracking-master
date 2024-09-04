@@ -15,25 +15,21 @@ recognizer = FaceRecognizer()
 
 while True:
     
-
+    
     
     # We get a new frame from the webcam
     _, frame = webcam.read()
 
     # We send this frame to GazeTracking to analyze it
-    # gaze_tracking?˜ refresh?•¨?ˆ˜?— ?›¹ìº¡ì—?„œ ?½??? frame?„ ?„£?–´ ?˜¸ì¶œí•¨
-    # refresh?Š” cv2 ? ?š©?•œ frameê³? faces ë³??ˆ˜ë¥? ë°˜í™˜ -> face detect?— ë³??ˆ˜ë¡œì¨ ?“¸ ?ˆ˜ ?ˆ?Œ 
-    frame, faces = gaze.refresh(frame)
-
-    # ?”„? ˆ?„?— cv2 ? ?š©, ?–¼êµ? ?ƒì§? 
-    gaze._analyze()
-    frame = gaze.annotated_frame()
+    gaze.refresh(frame)
 
     horizontal_ratio = gaze.horizontal_ratio()
     pupil_coords = gaze.pupil_left_coords()  
 
  
-    eye_tracker.update(horizontal_ratio, pupil_coords)
+    if(eye_tracker.update(horizontal_ratio, pupil_coords)):
+        print("ï¿½ï¿½ï¿½ï¿½ï¿½Ìµï¿½ ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ ï¿½Î½ï¿½ ï¿½ï¿½ï¿½ï¿½ ")
+        recognizer.recognize_faces()
 
     frame = gaze.annotated_frame()
     text_blink = ""
@@ -41,10 +37,6 @@ while True:
     text_right = ""
     text_center = ""
     text_ratio = ""
-
-    print(f"is_blinking() returns: {gaze.is_blinking()}")
-    print(f"is_right() returns: {gaze.is_right()}")
-
 
     if gaze.is_blinking is not None:
         text_blink = str(gaze.is_blinking())
