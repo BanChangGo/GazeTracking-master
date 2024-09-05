@@ -2,14 +2,17 @@ import cv2
 import dlib
 import numpy as np
 import threading
+from time import sleep
 
 from gaze_tracking import GazeTracking
 from gaze_tracking.eyemovement import EyeMovementTracker
-from gaze_tracking.face_detector3_2 import FaceRecognizer
+from gaze_tracking.face_detector import FaceRecognizer
+from gaze_tracking.sol_control import RelayController
 
 gaze = GazeTracking()
 eye_tracker = EyeMovementTracker()
 recognizer = FaceRecognizer()
+solanoid = RelayController()
 
 choice = False
 
@@ -88,7 +91,16 @@ def process_mode(frame):
     '''
     if detect:
         ##print("detect to recognize")
-        recognizer.recognize_faces(copy_frame) 
+        if(recognizer.recognize_faces(copy_frame) == "open"):
+            print("OPEN in main")
+            solanoid.relay_controller.on()
+            sleep(2)
+            solanoid.relay_controller.off()
+            sleep(2)
+                
+
+        
+                                            
 
    
 

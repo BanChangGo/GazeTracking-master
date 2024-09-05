@@ -91,7 +91,7 @@ class FaceRecognizer:
                         cv2.imshow("Face Recognition", frame)
                         cv2.waitKey(2000)
                         print("OPEN!")
-                        return
+                        return "open"
                         #exit()
 
                             #face_recognized = True
