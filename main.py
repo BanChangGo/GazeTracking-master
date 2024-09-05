@@ -1,36 +1,46 @@
-"""
-Demonstration of the GazeTracking library.
-Check the README.md for complete documentation.
-"""
-
 import cv2
+import dlib
+import numpy as np
+import threading
+
 from gaze_tracking import GazeTracking
 from gaze_tracking.eyemovement import EyeMovementTracker
-from gaze_tracking.face_detector3 import FaceRecognizer
+from gaze_tracking.face_detector3_2 import FaceRecognizer
 
 gaze = GazeTracking()
 eye_tracker = EyeMovementTracker()
-webcam = cv2.VideoCapture(0)
 recognizer = FaceRecognizer()
 
-while True:
-    
-    
-    
-    # We get a new frame from the webcam
-    _, frame = webcam.read()
+choice = False
 
-    # We send this frame to GazeTracking to analyze it
+def input_listener():
+    global choice
+    while True:
+        key = input("If you want to enter learner mode push l: \n")
+        if key.lower() == 'l':
+            choice = True
+        elif key.lower() == 'q':
+            break
+
+
+def make_frame(cap):   
+    ret, frame = cap.read()
+    if not ret:
+        return None
+    return frame.copy()
+
+
+def process_mode(frame):
+    copy_frame = frame.copy()
     gaze.refresh(frame)
-
     horizontal_ratio = gaze.horizontal_ratio()
-    pupil_coords = gaze.pupil_left_coords()  
+    pupil_coords = gaze.pupil_left_coords()
 
- 
-    if(eye_tracker.update(horizontal_ratio, pupil_coords)):
-        print("�����̵� ����, �� �ν� ���� ")
-        recognizer.recognize_faces()
+    '''
+    
+    --Start--Showing the points and the values of features
 
+    '''
     frame = gaze.annotated_frame()
     text_blink = ""
     text_left = ""
@@ -61,9 +71,59 @@ while True:
 
     cv2.imshow("Demo", frame)
 
-    if cv2.waitKey(1) == 27:
-        break
-   
+    '''
+    --End--of Showing
     
-webcam.release()
-cv2.destroyAllWindows()
+    '''
+
+
+    '''
+    #Detecting the Eye movement (From left to right)
+    '''
+    detect = eye_tracker.update(horizontal_ratio, pupil_coords)
+
+    
+    '''
+    #If Detect the movement successfully than Inspect the User (is authorized or not)
+    '''
+    if detect:
+        ##print("detect to recognize")
+        recognizer.recognize_faces(copy_frame) 
+
+   
+
+    
+
+def main():
+    global choice
+    cap = cv2.VideoCapture(0)
+
+    # Threading that receive the choice Input( by GPIO later )
+    input_thread = threading.Thread(target=input_listener)
+    input_thread.daemon = True
+    input_thread.start()
+
+    while True:
+        frame = make_frame(cap)
+        if frame is None:  # handling the expectioin 
+            break
+        
+
+        #By the value of choice, start the Learing Mode
+        if choice:
+            print("Lerning Mode")
+            recognizer.learn_face(frame)
+            choice = False
+        else:
+            process_mode(frame)
+
+
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
+            
+    cap.release()
+    cv2.destroyAllWindows()
+
+
+if __name__ == "__main__":
+    main()

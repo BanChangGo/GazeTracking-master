@@ -83,7 +83,7 @@ class FaceRecognizer:
                     distances = np.linalg.norm(self.face_encodings - encoding, axis=1)
                     min_distance_index = np.argmin(distances)
                        
-                    if distances[min_distance_index] < 0.6:
+                    if distances[min_distance_index] < 0.3:
                         name = self.face_names[min_distance_index]
                         cv2.rectangle(frame, (face.left(), face.top()), (face.right(), face.bottom()), (0, 255, 0), 2)
                         cv2.putText(frame, name, (face.left(), face.top() - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
